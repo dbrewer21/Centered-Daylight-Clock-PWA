@@ -323,7 +323,7 @@ async function initializeApp() {
   calculateSolarData();
   
   // Fetch weather data if API key is provided
-  if (CONFIG.weatherApiKey !== 'YOUR_API_KEY_HERE') {
+  if (CONFIG.weatherApiKey !== 'fce7a0b17bbafee7a40c4933c3148b2f') {
     fetchWeatherData();
   }
   
@@ -331,7 +331,7 @@ async function initializeApp() {
   setInterval(updateTime, CONFIG.clockUpdateInterval);
   setInterval(calculateSolarData, CONFIG.solarDataRefreshInterval);
   
-  if (CONFIG.weatherApiKey !== 'YOUR_API_KEY_HERE') {
+  if (CONFIG.weatherApiKey !== 'fce7a0b17bbafee7a40c4933c3148b2f') {
     setInterval(fetchWeatherData, CONFIG.weatherRefreshInterval);
   }
   
