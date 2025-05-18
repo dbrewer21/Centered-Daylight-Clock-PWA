@@ -1,0 +1,357 @@
+/* styles.css - Solar Noon Clock Styles */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    padding: 1rem;
+    text-align: center;
+    background-color: #34495e;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Container */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Clock Container */
+.clock-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.time-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Info Container */
+.info-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 1rem;
+}
+
+.info-box {
+    background-color: #34495e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Weather Container */
+.weather-container {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 500px;
+    background-color: #34495e;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.weather-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.weather-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.weather-temp {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.weather-desc {
+    opacity: 0.9;
+}
+
+.weather-trend {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.trend-canvas-container {
+    margin-top: 0.5rem;
+    width: 100%;
+    height: 80px;
+}
+
+#trend-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Landscape Mode Layout */
+@media (orientation: landscape) {
+    .main-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        gap: 1rem;
+    }
+    
+    .clock-container {
+        max-width: 50vh;
+    }
+    
+    .data-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-width: 300px;
+        width: 100%;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+    }
+}
+
+/* Light Mode Support */
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #ecf0f1;
+        color: #2c3e50;
+    }
+    
+    .header, .info-box, .weather-container {
+        background-color: #bdc3c7;
+    }
+}/* styles.css - Solar Noon Clock Styles */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    padding: 1rem;
+    text-align: center;
+    background-color: #34495e;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Container */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Clock Container */
+.clock-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.time-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Info Container */
+.info-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 1rem;
+}
+
+.info-box {
+    background-color: #34495e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Weather Container */
+.weather-container {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 500px;
+    background-color: #34495e;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.weather-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.weather-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.weather-temp {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.weather-desc {
+    opacity: 0.9;
+}
+
+.weather-trend {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.trend-canvas-container {
+    margin-top: 0.5rem;
+    width: 100%;
+    height: 80px;
+}
+
+#trend-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Landscape Mode Layout */
+@media (orientation: landscape) {
+    .main-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        gap: 1rem;
+    }
+    
+    .clock-container {
+        max-width: 50vh;
+    }
+    
+    .data-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-width: 300px;
+        width: 100%;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+    }
+}
+
+/* Light Mode Support */
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #ecf0f1;
+        color: #2c3e50;
+    }
+    
+    .header, .info-box, .weather-container {
+        background-color: #bdc3c7;
+    }
+}

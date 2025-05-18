@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Solar Noon Clock</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Solar Clock">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="description" content="A clock that centers noon between sunrise and sunset">
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" href="icons/apple-icon-180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Solar Noon Clock</h1>
+    </header>
+    
+    <main class="main-container">
+        <div class="clock-container">
+            <canvas id="clock-canvas"></canvas>
+            <div class="time-display">
+                <div id="digital-time">--:--:--</div>
+                <div id="date-display">--- --- --</div>
+            </div>
+        </div>
+        
+        <div class="data-container">
+            <div class="info-container">
+                <div class="info-box">
+                    <div class="info-title">Sunrise</div>
+                    <div class="info-value" id="sunrise-time">--:--</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">Sunset</div>
+                    <div class="info-value" id="sunset-time">--:--</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">Daylight</div>
+                    <div class="info-value" id="daylight-duration">-- h -- m</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">Daylight Used</div>
+                    <div class="info-value" id="daylight-percentage">--%</div>
+                </div>
+            </div>
+            
+            <div class="weather-container">
+                <div class="weather-row">
+                    <div>
+                        <div class="weather-temp" id="temperature">--°C</div>
+                        <div class="weather-desc" id="weather-condition">------</div>
+                    </div>
+                    <div class="weather-icon" id="weather-icon-container">
+                        <!-- Weather icon will be inserted here -->
+                    </div>
+                </div>
+                <div class="weather-trend" id="weather-trend">Collecting weather data...</div>
+                <div class="trend-canvas-container">
+                    <canvas id="trend-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+    
+    <!-- SunCalc Library (for solar calculations) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+    
+    <!-- Main Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>

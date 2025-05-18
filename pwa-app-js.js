@@ -156,6 +156,94 @@ function drawTrendGraph() {
     trendContext.fillStyle = '#2980b9';
     trendContext.fill();
   }
+}/wn/${STATE.weatherData.icon}@2x.png" alt="${STATE.weatherData.description}">`;
+  
+  // Update trend text
+  document.getElementById('weather-trend').textContent = getWeatherTrendDescription();
+}
+
+function getWeatherTrendDescription() {
+  const history = STATE.weatherHistory;
+  
+  if (history.length <= 1) {
+    return 'Collecting weather data...';
+  }
+  
+  // Get the oldest and newest temperature points
+  const oldestPoint = history[0];
+  const newestPoint = history[history.length - 1];
+  
+  const tempDiff = newestPoint.temperature - oldestPoint.temperature;
+  const timeDiff = (new Date(newestPoint.timestamp) - new Date(oldestPoint.timestamp)) / (1000 * 60 * 60);
+  
+  let trendText = '';
+  
+  if (Math.abs(tempDiff) < 1) {
+    trendText = 'Temperature stable';
+  } else if (tempDiff > 0) {
+    trendText = `Warming trend: +${tempDiff.toFixed(1)}°C over ${Math.round(timeDiff)}h`;
+  } else {
+    trendText = `Cooling trend: ${tempDiff.toFixed(1)}°C over ${Math.round(timeDiff)}h`;
+  }
+  
+  return trendText;
+}
+
+function drawTrendGraph() {
+  const history = STATE.weatherHistory;
+  if (history.length <= 1) return;
+  
+  const width = trendCanvas.width;
+  const height = trendCanvas.height;
+  
+  // Clear canvas
+  trendContext.clearRect(0, 0, width, height);
+  
+  // Extract data
+  const temperatures = history.map(entry => entry.temperature);
+  const timestamps = history.map(entry => new Date(entry.timestamp));
+  
+  // Find min/max for scaling
+  const minTemp = Math.min(...temperatures) - 1;
+  const maxTemp = Math.max(...temperatures) + 1;
+  const tempRange = maxTemp - minTemp;
+  
+  // Draw axes
+  trendContext.beginPath();
+  trendContext.strokeStyle = '#95a5a6';
+  trendContext.lineWidth = 1;
+  trendContext.moveTo(0, height - 5);
+  trendContext.lineTo(width, height - 5);
+  trendContext.stroke();
+  
+  // Plot temperature line
+  trendContext.beginPath();
+  trendContext.strokeStyle = '#3498db';
+  trendContext.lineWidth = 2;
+  
+  for (let i = 0; i < temperatures.length; i++) {
+    const x = (width * i) / (temperatures.length - 1);
+    const y = height - 5 - ((temperatures[i] - minTemp) / tempRange) * (height - 10);
+    
+    if (i === 0) {
+      trendContext.moveTo(x, y);
+    } else {
+      trendContext.lineTo(x, y);
+    }
+  }
+  
+  trendContext.stroke();
+  
+  // Draw dots at each data point
+  for (let i = 0; i < temperatures.length; i++) {
+    const x = (width * i) / (temperatures.length - 1);
+    const y = height - 5 - ((temperatures[i] - minTemp) / tempRange) * (height - 10);
+    
+    trendContext.beginPath();
+    trendContext.arc(x, y, 2, 0, 2 * Math.PI);
+    trendContext.fillStyle = '#2980b9';
+    trendContext.fill();
+  }
 }// Solar Noon Clock - Main Application Code
 
 // Configuration
@@ -165,7 +253,7 @@ const CONFIG = {
   defaultLongitude: -74.0060,
   
   // Weather API settings
-  weatherApiKey: 'fce7a0b17bbafee7a40c4933c3148b2f', // Replace with your OpenWeatherMap API key
+  weatherApiKey: 'YOUR_API_KEY_HERE', // Replace with your OpenWeatherMap API key
   weatherRefreshInterval: 30 * 60 * 1000, // 30 minutes
   
   // Clock settings
