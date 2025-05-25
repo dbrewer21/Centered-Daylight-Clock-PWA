@@ -67,14 +67,14 @@ async function initializeApp() {
   // Try to load saved data
   loadSavedData();
   
-  // Set initial time
-  updateTime();
-  
-  // Try to get user's location
+  // Try to get user's location first
   await getUserLocation();
   
-  // Calculate solar data (sunrise, sunset, etc.)
+  // Calculate solar data (sunrise, sunset, etc.) - this must happen before updateTime
   calculateSolarData();
+  
+  // Now set initial time (after solar data is calculated)
+  updateTime();
   
   // Fetch weather data if API key is provided
   if (CONFIG.weatherApiKey !== 'YOUR_API_KEY_HERE') {
@@ -250,46 +250,70 @@ function calculateSolarData() {
   STATE.today = new Date();
   STATE.today.setHours(0, 0, 0, 0);
   
-  // Calculate sun times using SunCalc library
-  const sunTimes = SunCalc.getTimes(
-    STATE.today,
-    STATE.latitude,
-    STATE.longitude
-  );
+  // Make sure we have valid coordinates
+  if (!STATE.latitude || !STATE.longitude) {
+    console.log('Using default coordinates for solar calculations');
+    STATE.latitude = CONFIG.defaultLatitude;
+    STATE.longitude = CONFIG.defaultLongitude;
+  }
   
-  STATE.sunriseTime = sunTimes.sunrise;
-  STATE.sunsetTime = sunTimes.sunset;
-  
-  // Calculate solar noon (midpoint between sunrise and sunset)
-  const sunriseMsec = STATE.sunriseTime.getTime();
-  const sunsetMsec = STATE.sunsetTime.getTime();
-  
-  STATE.solarNoon = new Date((sunriseMsec + sunsetMsec) / 2);
-  
-  // Calculate daylight duration
-  STATE.daylightDuration = calculateDaylightDuration(sunriseMsec, sunsetMsec);
-  
-  // Calculate offset between standard noon and solar noon
-  const standardNoon = new Date(STATE.today);
-  standardNoon.setHours(12, 0, 0, 0);
-  
-  STATE.offsetMinutes = (STATE.solarNoon.getTime() - standardNoon.getTime()) / (60 * 1000);
-  
-  // Update UI with calculated values
-  updateSolarDisplay();
-  
-  // Store calculation date to localStorage
-  const solarData = {
-    date: STATE.today.toISOString(),
-    sunriseTime: STATE.sunriseTime.toISOString(),
-    sunsetTime: STATE.sunsetTime.toISOString(),
-    solarNoon: STATE.solarNoon.toISOString(),
-    offsetMinutes: STATE.offsetMinutes,
-    latitude: STATE.latitude,
-    longitude: STATE.longitude
-  };
-  
-  localStorage.setItem('solarData', JSON.stringify(solarData));
+  try {
+    // Calculate sun times using SunCalc library
+    const sunTimes = SunCalc.getTimes(
+      STATE.today,
+      STATE.latitude,
+      STATE.longitude
+    );
+    
+    // Verify we got valid results
+    if (!sunTimes.sunrise || !sunTimes.sunset) {
+      console.error('SunCalc returned invalid sunrise/sunset times');
+      return;
+    }
+    
+    STATE.sunriseTime = sunTimes.sunrise;
+    STATE.sunsetTime = sunTimes.sunset;
+    
+    // Calculate solar noon (midpoint between sunrise and sunset)
+    const sunriseMsec = STATE.sunriseTime.getTime();
+    const sunsetMsec = STATE.sunsetTime.getTime();
+    
+    STATE.solarNoon = new Date((sunriseMsec + sunsetMsec) / 2);
+    
+    // Calculate daylight duration
+    STATE.daylightDuration = calculateDaylightDuration(sunriseMsec, sunsetMsec);
+    
+    // Calculate offset between standard noon and solar noon
+    const standardNoon = new Date(STATE.today);
+    standardNoon.setHours(12, 0, 0, 0);
+    
+    STATE.offsetMinutes = (STATE.solarNoon.getTime() - standardNoon.getTime()) / (60 * 1000);
+    
+    // Update UI with calculated values
+    updateSolarDisplay();
+    
+    // Store calculation date to localStorage
+    const solarData = {
+      date: STATE.today.toISOString(),
+      sunriseTime: STATE.sunriseTime.toISOString(),
+      sunsetTime: STATE.sunsetTime.toISOString(),
+      solarNoon: STATE.solarNoon.toISOString(),
+      offsetMinutes: STATE.offsetMinutes,
+      latitude: STATE.latitude,
+      longitude: STATE.longitude
+    };
+    
+    localStorage.setItem('solarData', JSON.stringify(solarData));
+    
+    console.log('Solar data calculated successfully', {
+      sunrise: STATE.sunriseTime.toLocaleTimeString(),
+      sunset: STATE.sunsetTime.toLocaleTimeString(),
+      offset: STATE.offsetMinutes.toFixed(2) + ' minutes'
+    });
+    
+  } catch (error) {
+    console.error('Error calculating solar data:', error);
+  }
 }
 
 function calculateDaylightDuration(sunriseMsec, sunsetMsec) {
@@ -309,6 +333,11 @@ function calculateDaylightDuration(sunriseMsec, sunsetMsec) {
 }
 
 function calculateDaylightPercentage() {
+  // Return 0 if sunrise/sunset times haven't been calculated yet
+  if (!STATE.sunriseTime || !STATE.sunsetTime) {
+    return 0;
+  }
+  
   const currentMsec = STATE.currentStandardTime.getTime();
   const sunriseMsec = STATE.sunriseTime.getTime();
   const sunsetMsec = STATE.sunsetTime.getTime();
@@ -333,6 +362,11 @@ function calculateDaylightPercentage() {
 }
 
 function updateSolarDisplay() {
+  // Only update if we have valid sunrise/sunset times
+  if (!STATE.sunriseTime || !STATE.sunsetTime || !STATE.daylightDuration) {
+    return;
+  }
+  
   // Update sunrise time display
   document.getElementById('sunrise-time').textContent = 
     STATE.sunriseTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
